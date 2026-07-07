@@ -1,0 +1,18 @@
+<?php
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Review extends Model
+{
+    protected $fillable = ['patient_id', 'doctor_id', 'appointment_id', 'rating', 'comment'];
+
+    protected $casts = ['comment' => 'array'];
+    public function doctor() {
+        return $this->belongsTo(Doctor::class);
+    }
+
+    public function patient() {
+        return $this->belongsTo(User::class, 'patient_id');
+    }
+}
