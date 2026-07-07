@@ -9,10 +9,19 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
-        Schema::table('services', function (Blueprint $table) {
-$table->boolean('is_active')->default(true);        });
+        if (!Schema::hasTable('services')) {
+            Schema::create('services', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('doctor_id')->constrained('doctors')->onDelete('cascade');
+                $table->json('name'); // {"ar": "...", "en": "..."}
+                $table->string('image')->nullable(); // مسار الصورة
+                $table->decimal('price', 8, 2);
+                $table->integer('duration_minutes');
+                $table->timestamps();
+            });
+        }
     }
 
     /**
@@ -20,8 +29,6 @@ $table->boolean('is_active')->default(true);        });
      */
     public function down(): void
     {
-        Schema::table('services', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('services');
     }
 };
