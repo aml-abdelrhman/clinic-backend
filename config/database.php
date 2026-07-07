@@ -50,7 +50,7 @@ return [
     'port' => '3306',
     'database' => 'railway', // اسم قاعدة البيانات الافتراضي في Railway
     'username' => 'root',   // اسم المستخدم الافتراضي
-   'password' => env('MYSQLPASSWORD'),
+   'password' => env('DB_PASSWORD'),
     'unix_socket' => '',
     'charset' => 'utf8mb4',
     'collation' => 'utf8mb4_unicode_ci',
