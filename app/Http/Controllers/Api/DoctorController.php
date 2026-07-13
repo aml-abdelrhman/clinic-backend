@@ -87,10 +87,12 @@ class DoctorController extends Controller
             'rating'           => 'nullable|numeric|min:0|max:5',
             'email'            => 'sometimes|email|unique:users,email,' . $doctor->user_id,
             'password'         => 'sometimes|string|min:6',
+            'image'            => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
         ]);
 
         // 🔍 تشخيص مؤقت - احذفيه بعد ما تتأكدي إن كل حاجة شغالة
-        Log::info('=== DOCTOR UPDATE: RAW REQUEST ===', $request->all());
+        Log::info('=== DOCTOR UPDATE: RAW REQUEST ===', $request->except(['image', 'password']));
+        Log::info('=== DOCTOR UPDATE: HAS FILE? ===', ['hasFile' => $request->hasFile('image')]);
 
         DB::beginTransaction();
         try {
@@ -134,6 +136,13 @@ class DoctorController extends Controller
                     : $request->input('languages');
             }
 
+            // ✅ التعامل مع الصورة لو اترفعت مع باقي بيانات الفورم
+            if ($request->hasFile('image')) {
+                $imageData = $this->uploadImage($request->file('image'), 'doctors');
+                $doctorData['image'] = $imageData['url'];
+                Log::info('=== DOCTOR UPDATE: NEW IMAGE URL ===', ['url' => $imageData['url']]);
+            }
+
             // 🔍 تشخيص مؤقت
             Log::info('=== DOCTOR UPDATE: DATA TO SAVE ===', $doctorData);
 
@@ -173,7 +182,7 @@ class DoctorController extends Controller
     }
 
     /**
-     * تحديث صورة الطبيب
+     * تحديث صورة الطبيب فقط (endpoint منفصل)
      */
     public function updateImage(Request $request, $id)
     {

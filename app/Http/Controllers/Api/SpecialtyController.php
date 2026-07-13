@@ -17,77 +17,77 @@ class SpecialtyController extends Controller
         return Specialty::all();
     }
 
-    // إضافة تخصص جديد
-    public function store(Request $request)
-    {
-        $request->validate([
-            'name' => 'required',
-            'description' => 'required',
-            'slug' => 'required|unique:specialties,slug',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
-        ]);
+    // // إضافة تخصص جديد
+    // public function store(Request $request)
+    // {
+    //     $request->validate([
+    //         'name' => 'required',
+    //         'description' => 'required',
+    //         'slug' => 'required|unique:specialties,slug',
+    //         'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+    //     ]);
 
-        $specialty = new Specialty();
-        $specialty->name = $request->input('name');
-        $specialty->description = $request->input('description');
-        $specialty->slug = $request->input('slug');
+    //     $specialty = new Specialty();
+    //     $specialty->name = $request->input('name');
+    //     $specialty->description = $request->input('description');
+    //     $specialty->slug = $request->input('slug');
 
-        // استخدام دالة الرفع من التريت
-        if ($request->hasFile('image')) {
-            $imageData = $this->uploadImage($request->file('image'), 'specialties');
-            $specialty->image = $imageData['url']; // استخراج الرابط فقط من المصفوفة
-        }
+    //     // استخدام دالة الرفع من التريت
+    //     if ($request->hasFile('image')) {
+    //         $imageData = $this->uploadImage($request->file('image'), 'specialties');
+    //         $specialty->image = $imageData['url']; // استخراج الرابط فقط من المصفوفة
+    //     }
 
-        $specialty->save();
+    //     $specialty->save();
 
-        return response()->json(['message' => 'تمت إضافة التخصص بنجاح', 'data' => $specialty], 201);
-    }
+    //     return response()->json(['message' => 'تمت إضافة التخصص بنجاح', 'data' => $specialty], 201);
+    // }
 
-    // تحديث تخصص موجود
-    public function update(Request $request, $id)
-    {
-        $specialty = Specialty::findOrFail($id);
+//     // تحديث تخصص موجود
+//     public function update(Request $request, $id)
+//     {
+//         $specialty = Specialty::findOrFail($id);
 
-        $request->validate([
-            'name' => 'sometimes|array',
-            'description' => 'sometimes|array',
-            'slug' => 'sometimes|unique:specialties,slug,' . $id,
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
-        ]);
+//         $request->validate([
+//             'name' => 'sometimes|array',
+//             'description' => 'sometimes|array',
+//             'slug' => 'sometimes|unique:specialties,slug,' . $id,
+//             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+//         ]);
 
-        if ($request->has('name')) $specialty->name = $request->input('name');
-        if ($request->has('description')) $specialty->description = $request->input('description');
-        if ($request->has('slug')) $specialty->slug = $request->input('slug');
+//         if ($request->has('name')) $specialty->name = $request->input('name');
+//         if ($request->has('description')) $specialty->description = $request->input('description');
+//         if ($request->has('slug')) $specialty->slug = $request->input('slug');
 
-        // استخدام دالة الرفع من التريت
-        if ($request->hasFile('image')) {
-            $imageData = $this->uploadImage($request->file('image'), 'specialties');
-            $specialty->image = $imageData['url']; // استخراج الرابط فقط من المصفوفة
-        }
+//         // استخدام دالة الرفع من التريت
+//         if ($request->hasFile('image')) {
+//             $imageData = $this->uploadImage($request->file('image'), 'specialties');
+//             $specialty->image = $imageData['url']; // استخراج الرابط فقط من المصفوفة
+//         }
 
-        $specialty->save();
+//         $specialty->save();
 
-        return response()->json(['message' => 'تم تحديث التخصص بنجاح', 'data' => $specialty]);
-    }
+//         return response()->json(['message' => 'تم تحديث التخصص بنجاح', 'data' => $specialty]);
+//     }
 
-    // حذف تخصص
-public function destroy(Request $request, $id)
-{
-    $specialty = Specialty::findOrFail($id);
+//     // حذف تخصص
+// public function destroy(Request $request, $id)
+// {
+//     $specialty = Specialty::findOrFail($id);
 
-    // التحقق من وجود أطباء
-    if ($specialty->doctors()->count() > 0 && !$request->has('force')) {
-        return response()->json(['message' => 'هذا التخصص مرتبط بأطباء!'], 409);
-    }
+//     // التحقق من وجود أطباء
+//     if ($specialty->doctors()->count() > 0 && !$request->has('force')) {
+//         return response()->json(['message' => 'هذا التخصص مرتبط بأطباء!'], 409);
+//     }
 
-    // إذا تم إرسال طلب الحذف الإجباري، احذفي الأطباء أولاً
-    if ($request->has('force')) {
-        $specialty->doctors()->delete(); 
-    }
+//     // إذا تم إرسال طلب الحذف الإجباري، احذفي الأطباء أولاً
+//     if ($request->has('force')) {
+//         $specialty->doctors()->delete(); 
+//     }
 
-    $specialty->delete();
-    return response()->json(['message' => 'تم الحذف بنجاح']);
-}
+//     $specialty->delete();
+//     return response()->json(['message' => 'تم الحذف بنجاح']);
+// }
 
 public function show($slug)
 {
