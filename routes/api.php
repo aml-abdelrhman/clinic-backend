@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\Admin\AdminAppointmentController;
 use App\Http\Controllers\Api\Doctor\DoctorAppointmentController;
 use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\FavoriteController;
+use App\Http\Controllers\Api\Admin\UserController;
 
 use Cloudinary\Configuration\Configuration;
 use Cloudinary\Api\Admin\AdminApi;
@@ -34,6 +35,13 @@ Route::get('/availabilities', [DoctorAvailabilityController::class, 'index']);
 Route::middleware('auth:sanctum')->group(function () {
 Route::post('/logout', [AuthController::class, 'logout']);
 Route::get('/profile', [AuthController::class, 'profile']);
+
+    Route::get('/doctor/profile', [DoctorController::class, 'myProfile']);
+
+
+
+    
+
 Route::get('/my-appointments', [AppointmentController::class, 'myAppointments']);
 Route::post('/appointments', [AppointmentController::class, 'store']);
 Route::put('/appointments/{id}/cancel', [AppointmentController::class, 'cancel']);
@@ -43,13 +51,17 @@ Route::put('/appointments/{id}/cancel', [AppointmentController::class, 'cancel']
     // مساراتك الحالية (خارج الـ middleware المحمي):
 Route::get('/favorites', [FavoriteController::class, 'index']);
 Route::post('/favorites/{doctor_id}', [FavoriteController::class, 'toggle']);
+
+
 });
 
 // 3. مسارات الأدمن (تتطلب صلاحية admin)
 Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(function () {
 // Route::apiResource('specialties', SpecialtyController::class);
 
-
+Route::get('/users', [App\Http\Controllers\Api\Admin\UserController::class, 'index']);
+Route::put('/users/{id}/role', [App\Http\Controllers\Api\Admin\UserController::class, 'updateRole']);
+Route::delete('/users/{id}', [App\Http\Controllers\Api\Admin\UserController::class, 'destroy']);
 Route::get('/specialties', [SpecialtyController::class, 'index']);
 Route::post('/specialties', [SpecialtyController::class, 'store']);
 Route::post('/specialties/{specialty}', [SpecialtyController::class, 'update']); // نستخدم POST للتحديث لتجاوز مشاكل الـ FormData
@@ -82,7 +94,10 @@ Route::get('/dashboard-stats', [DashboardController::class, 'getDashboardStats']
 
 // 4. مسارات الطبيب (تتطلب صلاحية is_doctor)
 Route::middleware(['auth:sanctum', 'is_doctor'])->prefix('doctor')->group(function () {
-Route::get('/services', [DoctorServiceController::class, 'index']);
+Route::post('/profile/{id}', [DoctorController::class, 'update']);
+    Route::post('/profile/{id}/image', [DoctorController::class, 'updateImage']);
+    
+    Route::get('/services', [DoctorServiceController::class, 'index']);
 Route::post('/services', [DoctorServiceController::class, 'store']);
 Route::put('/services/{id}', [DoctorServiceController::class, 'update']);
 Route::delete('/services/{id}', [DoctorServiceController::class, 'destroy']);
@@ -98,30 +113,3 @@ Route::patch('/appointments/{id}/cancel', [DoctorAppointmentController::class, '
 Route::post('/appointments/{id}/complete', [DoctorAppointmentController::class, 'complete']);
 
 Route::get('/reviews', [ReviewController::class, 'doctorReviews']);    });
-Route::get('/test-cloudinary', function () {
-    try {
-        // 1. الإعداد المباشر
-        Configuration::instance([
-            'cloud' => [
-                'cloud_name' => 'dfgdtlfhg',
-                'api_key'    => '572968122319822',
-                'api_secret' => 'zdkcDD05lfv_3dTwL4KPK29zz50',
-            ],
-        ]);
-
-        // 2. استخدام AdminApi وهو الجزء الذي يحتوي على دوال حقيقية
-        $adminApi = new AdminApi();
-        $response = $adminApi->ping();
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'تم الاتصال بنجاح!',
-            'data' => $response
-        ]);
-    } catch (\Exception $e) {
-        return response()->json([
-            'status' => 'error',
-            'message' => 'خطأ: ' . $e->getMessage()
-        ]);
-    }
-});

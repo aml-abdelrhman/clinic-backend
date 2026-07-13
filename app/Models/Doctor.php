@@ -14,10 +14,10 @@ class Doctor extends Model
     ];
     
 
-public function doctor()
+public function user()
 {
-    return $this->hasOne(Doctor::class, 'user_id'); 
-}    
+    return $this->belongsTo(User::class, 'user_id'); 
+}
     // العلاقة مع التخصص
     public function specialty() {
         return $this->belongsTo(Specialty::class);

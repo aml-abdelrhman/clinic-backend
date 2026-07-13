@@ -17,17 +17,23 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
+    // أضيفي هذه العلاقة لربط المستخدم بملف الطبيب
+    public function doctor() 
+    {
+        return $this->hasOne(Doctor::class, 'user_id');
+    }
+
     public function appointments()
-{
-    return $this->hasMany(Appointment::class, 'patient_id');
-}
+    {
+        return $this->hasMany(Appointment::class, 'patient_id');
+    }
 
-public function favorites()
-{
-    return $this->hasMany(Favorite::class, 'patient_id');
-}
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class, 'patient_id');
+    }
 
-public function favoriteDoctors()
+    public function favoriteDoctors()
     {
         return $this->belongsToMany(Doctor::class, 'favorites', 'patient_id', 'doctor_id');
     }
