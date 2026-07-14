@@ -27,9 +27,10 @@ class DashboardController extends Controller
             DB::raw('DATE(created_at) as date'),
             DB::raw('count(*) as count')
         )
+        ->where('created_at', '>=', now()->subDays(6)->startOfDay())
         ->groupBy('date')
         ->orderBy('date', 'ASC') // الترتيب تصاعدي ليظهر الرسم البياني من الأقدم للأحدث
-        ->take(7)
+        // ->take(7)
         ->get();
 
         // 3. إرجاع كل البيانات في API واحد للفرونت إيند
